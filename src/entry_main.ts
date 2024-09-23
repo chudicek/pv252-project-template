@@ -13,7 +13,15 @@ initFibonacciUi(site_b);
 
 // many whitespaces
 
+const noop = () => {
+  const a: string = 1;
+  console.log(a); // ok mby not noop
+};
+
 site_a.onclick = () => {
+  // just use it for eslint to shut up
+  noop();
+
   UIkit.notification("Going to factorials in 3s...", { pos: "bottom-right" });
   setTimeout(() => {
     UIkit.notification("Going to factorials in 2s...", { pos: "bottom-right" });
