@@ -14,7 +14,7 @@ initFibonacciUi(site_b);
 // many whitespaces
 
 const noop = () => {
-  const a: string = 1;
+  const a = 1;
   console.log(a); // ok mby not noop
 };
 
