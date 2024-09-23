@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "./coverage_wrapper";
 
-test("find-watman", async ({ page }) => {  
-  await page.goto("/");
+test("find-watman", async ({ page }) => {
+  await page.goto("/spiledmycoffeonthekeyboardandittypedthis");
   await expect(page.getByAltText("This is watman")).toBeInViewport();
 });
