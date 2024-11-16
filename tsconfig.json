@@ -13,13 +13,7 @@
     "strict": true,
     "outDir": "dist",
     "rootDir": "src",
-    "lib": [
-      "dom",
-      "esnext"
-    ]
+    "lib": ["dom", "esnext"]
   },
-  "include": [
-    "src/*",
-    "custom.d.ts"
-  ]
+  "include": ["src/*", "custom.d.ts"]
 }

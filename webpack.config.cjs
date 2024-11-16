@@ -8,7 +8,13 @@ module.exports = {
    */
   entry: {
     main: {
-      import: ["./src/entry_main.ts", "./src/counter_example.ts", "./src/list_examples.ts", "./src/css/entry_main.less", "uikit"],
+      import: [
+        "./src/entry_main.ts",
+        "./src/counter_example.ts",
+        "./src/list_examples.ts",
+        "./src/css/entry_main.less",
+        "uikit",
+      ],
     },
   },
   /*
@@ -19,7 +25,7 @@ module.exports = {
   output: {
     clean: true,
     filename: "[name].[hash].bundle.js",
-    path: path.resolve(__dirname, "dist"),  // must be an absolute path
+    path: path.resolve(__dirname, "dist"), // must be an absolute path
   },
   /* Dist is also where we want to start the development web server. */
   devServer: {
@@ -40,7 +46,7 @@ module.exports = {
       },*/
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        use: "ts-loader",
         exclude: /node_modules/,
       },
       /* Use LESS, and then load the result with normal CSS loader. */
@@ -66,22 +72,22 @@ module.exports = {
       },
       {
         test: /\.tsv$/,
-        loader: 'csv-loader',
+        loader: "csv-loader",
         options: {
           delimiter: "\t",
           dynamicTyping: true,
           header: true,
-          skipEmptyLines: true
-        }
-      }
+          skipEmptyLines: true,
+        },
+      },
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: [".ts", ".js"],
     extensionAlias: {
       ".js": [".ts", ".js"],
-      ".mjs": [".mts", ".mjs"]
-    }
+      ".mjs": [".mts", ".mjs"],
+    },
   },
   plugins: [
     // Generates the default index.html

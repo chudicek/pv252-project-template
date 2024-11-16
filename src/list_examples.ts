@@ -6,7 +6,7 @@ import {
   Observable,
   observable,
   repeat,
-  Subscriber
+  Subscriber,
 } from "@microsoft/fast-element";
 import { reactive } from "@microsoft/fast-element/state.js";
 import { Context } from "@microsoft/fast-element/context.js";
@@ -53,7 +53,6 @@ import { Context } from "@microsoft/fast-element/context.js";
  * a complex architectural problem...
  */
 export class BasicCheckboxList extends FASTElement {
-
   @observable
   checkedState: boolean[] = [];
 
@@ -80,29 +79,33 @@ export class BasicCheckboxList extends FASTElement {
     // (the checkedState list object is still the same, only it's internal
     // state was mutated). So instead, we explicitly "notify" everyone that
     // is observing the changes of checkedState that the array has changed.
-    Observable.notify(this, "checkedState")
+    Observable.notify(this, "checkedState");
   }
-
 }
 const basicListTemplate = html<BasicCheckboxList>`
-  ${ (list) => console.log("Redrawing basic list...", list.checkedState) }
+  ${(list) => console.log("Redrawing basic list...", list.checkedState)}
   <div>
-    ${repeat( list => list.checkedState, html<boolean, BasicCheckboxList>`
-    <div>
-      <fluent-checkbox 
-        ?checked="${ isChecked => isChecked }"
-        @click="${ (isChecked, ctx) => ctx.parent.toggleOne(ctx.index, !isChecked) }"
-      >
-        Item is checked: ${ isChecked => isChecked }
-      </fluent-checkbox>
-    </div>
-    `, { positioning: true } )}
+    ${repeat(
+      (list) => list.checkedState,
+      html<boolean, BasicCheckboxList>`
+        <div>
+          <fluent-checkbox
+            ?checked="${(isChecked) => isChecked}"
+            @click="${(isChecked, ctx) =>
+              ctx.parent.toggleOne(ctx.index, !isChecked)}"
+          >
+            Item is checked: ${(isChecked) => isChecked}
+          </fluent-checkbox>
+        </div>
+      `,
+      { positioning: true },
+    )}
   </div>
-`
+`;
 BasicCheckboxList.define({
   name: "basic-checkbox-list",
   template: basicListTemplate,
-})
+});
 
 /*
   The following is an example of a list rendered using
@@ -164,15 +167,15 @@ ContextListItem.define({
   // and the checkbox. It gets this data from the context property.
   template: html<ContextListItem>`
     <div>
-      <fluent-checkbox 
-          ?checked="${ x => x.state().isChecked }"
-          @click="${ x => x.toggle() }"
+      <fluent-checkbox
+        ?checked="${(x) => x.state().isChecked}"
+        @click="${(x) => x.toggle()}"
       >
-        Item is checked: ${ x => x.state().isChecked }
+        Item is checked: ${(x) => x.state().isChecked}
       </fluent-checkbox>
     </div>
-  `
-})
+  `,
+});
 
 /**
  * `ContextCheckboxList` (together with `CheckboxList` interface and the
@@ -204,11 +207,14 @@ export class ContextCheckboxList extends FASTElement implements CheckboxList {
 
     // Whenever "items" changes, call updateItemCount to ensure the
     // list has the right amount of elements.
-    Observable.getNotifier(this).subscribe(<Subscriber>{
-      handleChange(subject: ContextCheckboxList): void {
-        subject.updateItemCount(subject.items);
-      }
-    }, "items");
+    Observable.getNotifier(this).subscribe(
+      <Subscriber>{
+        handleChange(subject: ContextCheckboxList): void {
+          subject.updateItemCount(subject.items);
+        },
+      },
+      "items",
+    );
   }
 
   /**
@@ -243,41 +249,47 @@ export class ContextCheckboxList extends FASTElement implements CheckboxList {
     console.log("[Context] Toggled", position, value);
     this.checkedState[position].isChecked = value;
   }
-
 }
 
 ContextCheckboxList.define({
-  name: 'context-checkbox-list',
+  name: "context-checkbox-list",
   // The HTML for the list itself is just a <div> with a <slot> inside to
   // put all the child elements in.
   template: html`<div><slot></slot></div>`,
-})
-
+});
 
 /*
   Finally, we make the Add/Remove buttons work in a very rudimentary way.
  */
 
 document.getElementById("basic-add")!.onclick = () => {
-  const list = document.querySelector<BasicCheckboxList>("#basic-checkbox-list")!;
-  list.items! += 1
-}
+  const list = document.querySelector<BasicCheckboxList>(
+    "#basic-checkbox-list",
+  )!;
+  list.items! += 1;
+};
 
 document.getElementById("basic-remove")!.onclick = () => {
-  const list = document.querySelector<BasicCheckboxList>("#basic-checkbox-list")!;
+  const list = document.querySelector<BasicCheckboxList>(
+    "#basic-checkbox-list",
+  )!;
   if (list.items! > 0) {
     list.items! -= 1;
   }
-}
+};
 
 document.getElementById("context-add")!.onclick = () => {
-  const list = document.querySelector<ContextCheckboxList>("#context-checkbox-list")!;
-  list.items! += 1
-}
+  const list = document.querySelector<ContextCheckboxList>(
+    "#context-checkbox-list",
+  )!;
+  list.items! += 1;
+};
 
 document.getElementById("context-remove")!.onclick = () => {
-  const list = document.querySelector<ContextCheckboxList>("#context-checkbox-list")!;
+  const list = document.querySelector<ContextCheckboxList>(
+    "#context-checkbox-list",
+  )!;
   if (list.items! > 0) {
     list.items! -= 1;
   }
-}
+};

@@ -1,4 +1,11 @@
-import { css, FASTElement, html, observable, Observable, Subscriber } from "@microsoft/fast-element";
+import {
+  css,
+  FASTElement,
+  html,
+  observable,
+  Observable,
+  Subscriber,
+} from "@microsoft/fast-element";
 import { Context } from "@microsoft/fast-element/context.js";
 
 /*
@@ -16,7 +23,10 @@ export interface CounterContext {
   decrement(): void;
 }
 
-export class CounterContextElement extends FASTElement implements CounterContext {  
+export class CounterContextElement
+  extends FASTElement
+  implements CounterContext
+{
   @observable
   count: number = 0;
 
@@ -30,26 +40,30 @@ export class CounterContextElement extends FASTElement implements CounterContext
   connectedCallback(): void {
     super.connectedCallback();
     CounterContext.provide(this, this);
-    
+
     // Example of how to explicitly subscribe to a FAST observable.
     // For example if we want to update some content "imperatively"
     // instead of regenerating the component using a template.
-    // (Note that we can use this method anywhere where we have 
+    // (Note that we can use this method anywhere where we have
     // access to  a CounterContextElement, not just here.)
-    Observable.getNotifier(this).subscribe(<Subscriber>{
-      handleChange(subject): void {
-        console.log(subject.count);
-      }
-    }, "count");
-
+    Observable.getNotifier(this).subscribe(
+      <Subscriber>{
+        handleChange(subject): void {
+          console.log(subject.count);
+        },
+      },
+      "count",
+    );
   }
 }
 
 CounterContextElement.define({
   name: "counter-context",
-  template: html`<div style='display:block; text-align: center;'><slot></slot></div>`,
+  template: html`<div style="display:block; text-align: center;">
+    <slot></slot>
+  </div>`,
   styles: css``,
-})
+});
 
 export class CounterDisplay extends FASTElement {
   @CounterContext context!: CounterContext;
@@ -60,7 +74,7 @@ CounterDisplay.define({
   template: html<CounterDisplay>`
     <fluent-badge appearance="accent">${(x) => x.context.count}</fluent-badge>
   `,
-})
+});
 
 export class CounterUp extends FASTElement {
   @CounterContext context!: CounterContext;
@@ -69,9 +83,9 @@ export class CounterUp extends FASTElement {
 CounterUp.define({
   name: "counter-up",
   template: html<CounterDisplay>`
-    <fluent-button @click=${(x,c) => x.context.increment()}><slot></slot></fluend-button>
+    <fluent-button @click=${(x, c) => x.context.increment()}><slot></slot></fluend-button>
   `,
-})
+});
 
 export class CounterDown extends FASTElement {
   @CounterContext context!: CounterContext;
@@ -80,6 +94,6 @@ export class CounterDown extends FASTElement {
 CounterUp.define({
   name: "counter-down",
   template: html<CounterDisplay>`
-    <fluent-button @click=${(x,c) => x.context.decrement()}><slot></slot></fluend-button>
+    <fluent-button @click=${(x, c) => x.context.decrement()}><slot></slot></fluend-button>
   `,
-})
+});
