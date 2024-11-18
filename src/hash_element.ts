@@ -1,5 +1,9 @@
 import { FASTElement, html, observable, when } from "@microsoft/fast-element";
-import { AsyncSha256 } from "./sha-256.js";
+import {
+  ResponseFileLengthLoaded,
+  ResponseHashComputed,
+  ResponseProgressUpdate,
+} from "./hash_worker_messages.js";
 
 /**
  * The purpose of `HashElement` is to compute the SHA256 checksum of the given file, using the
@@ -44,31 +48,53 @@ export class HashElement extends FASTElement {
     // Read the file and then start computing the hash.
     // TODO: We want to "move" this computation into a WebWorker so that it
     // does not interfere with the rest of the UI.
-    const reader = new FileReader();
-    reader.onload = () => {
-      // The result should always be a string in this case.
-      const fileData = reader.result as string;
+    //   const reader = new FileReader();
+    //   reader.onload = () => {
+    //     // The result should always be a string in this case.
+    //     const fileData = reader.result as string;
 
-      // At this point, we know how much data we have.
-      this.total = fileData.length;
+    //     // At this point, we know how much data we have.
+    //     this.total = fileData.length;
 
-      const hasher = new AsyncSha256();
-      hasher.async_digest(
-        fileData,
-        (hash) => {
-          // We are done.
-          this.hash = hash;
-          this.remaining = 0;
-          this.elapsed = new Date().getTime() - this.#started.getTime();
-        },
-        (remaining) => {
-          // Update progress.
-          this.remaining = remaining;
-          this.elapsed = new Date().getTime() - this.#started.getTime();
-        },
-      );
+    //     const hasher = new AsyncSha256();
+    //     hasher.async_digest(
+    //       fileData,
+    //       (hash) => {
+    //         // We are done.
+    //         this.hash = hash;
+    //         this.remaining = 0;
+    //         this.elapsed = new Date().getTime() - this.#started.getTime();
+    //       },
+    //       (remaining) => {
+    //         // Update progress.
+    //         this.remaining = remaining;
+    //         this.elapsed = new Date().getTime() - this.#started.getTime();
+    //       },
+    //     );
+    //   };
+    //   reader.readAsText(file);
+    // }
+
+    const worker = new Worker(new URL("./hash_worker.js", import.meta.url));
+    worker.onmessage = (e) => {
+      if (e.data.type === "ResponseFileLengthLoaded") {
+        const message: ResponseFileLengthLoaded = e.data;
+        this.total = message.length;
+      } else if (e.data.type === "ResponseProgressUpdate") {
+        const message: ResponseProgressUpdate = e.data;
+        this.remaining = message.remaining;
+        this.elapsed = new Date().getTime() - this.#started.getTime();
+      } else if (e.data.type === "ResponseHashComputed") {
+        const message: ResponseHashComputed = e.data;
+        this.hash = message.hash;
+        this.remaining = 0;
+        this.elapsed = new Date().getTime() - this.#started.getTime();
+      } else {
+        throw new Error("Unknown message from worker" + e.data);
+      }
     };
-    reader.readAsText(file);
+
+    worker.postMessage({ type: "RequestComputeFileHash", file });
   }
 }
 

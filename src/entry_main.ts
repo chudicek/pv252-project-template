@@ -53,3 +53,7 @@ pong_worker.onmessage = (e) => {
 
 pong_worker.postMessage("Ping!");
 pong_worker.postMessage("Second message");
+
+pong_worker.onmessage = (e) => {
+  console.log("Received from worker:", e.data);
+};
